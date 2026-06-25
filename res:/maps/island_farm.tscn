@@ -1,0 +1,163 @@
+[gd_scene load_steps=35 format=3 uid="uid://c8j1h8dkp14ow"]
+
+[ext_resource type="Script" path="res://scripts/island_generator.gd"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_6pxhs"]
+sky_type = 0
+sky_horizon_color = Color(0.64625, 0.839844, 0.896484, 1)
+ground_horizon_color = Color(0.64625, 0.839844, 0.896484, 1)
+sun_angle_max = 1.5708
+
+[sub_resource type="Sky" id="Sky_8s5o8"]
+sky_material = SubResource("ProceduralSkyMaterial_6pxhs")
+
+[sub_resource type="Environment" id="Environment_5k6xa"]
+background_mode = 2
+background_energy_multiplier = 1.3
+sky = SubResource("Sky_8s5o8")
+ambient_light_source = 2
+ambient_light_energy = 0.8
+tonemap_mode = 2
+
+[sub_resource type="StandardMaterial3D" id="GrassMaterial"]
+albedo_color = Color(0.34902, 0.654902, 0.262745, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="SandMaterial"]
+albedo_color = Color(0.847059, 0.760784, 0.480392, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="WaterMaterial"]
+transparency = 1
+albedo_color = Color(0.176471, 0.580392, 0.847059, 0.7)
+metallic = 0.5
+roughness = 0.2
+
+[sub_resource type="StandardMaterial3D" id="SwampMaterial"]
+albedo_color = Color(0.396078, 0.513725, 0.239216, 1)
+roughness = 0.85
+
+[sub_resource type="StandardMaterial3D" id="TreeMaterial"]
+albedo_color = Color(0.560784, 0.34902, 0.196078, 1)
+roughness = 0.8
+
+[sub_resource type="StandardMaterial3D" id="LeafMaterial"]
+albedo_color = Color(0.262745, 0.501961, 0.180392, 1)
+roughness = 0.7
+
+[sub_resource type="StandardMaterial3D" id="RockMaterial"]
+albedo_color = Color(0.4, 0.4, 0.4, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="FlowerMaterial"]
+albedo_color = Color(0.894118, 0.278431, 0.541176, 1)
+roughness = 0.6
+
+[sub_resource type="StandardMaterial3D" id="FruitMaterial"]
+albedo_color = Color(0.988235, 0.168627, 0.168627, 1)
+roughness = 0.5
+
+[sub_resource type="StandardMaterial3D" id="AnimalMaterial"]
+albedo_color = Color(0.8, 0.7, 0.6, 1)
+roughness = 0.7
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_animal"]
+radius = 0.3
+height = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.2
+height = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tree"]
+radius = 0.3
+height = 2.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_foliage"]
+radius = 1.2
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereMesh" id="SphereMesh_fruit"]
+radius = 0.15
+radial_segments = 6
+rings = 3
+
+[sub_resource type="SphereMesh" id="SphereMesh_flower"]
+radius = 0.1
+radial_segments = 6
+rings = 3
+
+[sub_resource type="ConvexPolygonShape3D" id="IslandCollision"]
+points = PackedVector3Array(-150, 0, -150, 150, 0, -150, 150, 0, 150, -150, 0, 150, 0, 5, -180, 180, 5, 0, 0, 5, 180, -180, 5, 0)
+
+[sub_resource type="ConvexPolygonShape3D" id="WaterCollision"]
+points = PackedVector3Array(-200, -1, -200, 200, -1, -200, 200, -1, 200, -200, -1, 200)
+
+[sub_resource type="StandardMaterial3D" id="BushMaterial"]
+albedo_color = Color(0.419608, 0.6, 0.239216, 1)
+roughness = 0.75
+
+[sub_resource type="SphereMesh" id="SphereMesh_bush"]
+radius = 0.6
+radial_segments = 6
+rings = 3
+
+[node name="IslandFarm" type="Node3D"]
+script = ExtResource("type:Script", path="res://scripts/island_generator.gd")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_5k6xa")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, 0.25, -0.433013, 0, 0.866025, 0.5, 0.5, -0.433013, 0.75, 0, 50, 0)
+light_energy_multiplier = 2.0
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, -0.408248, 0.57735, 0, 0.816497, 0.57735, -0.707107, -0.408248, 0.57735, 100, 80, 100)
+current = true
+
+[node name="Terrain" type="Node3D" parent="."]
+
+[node name="IslandMesh" type="MeshInstance3D" parent="Terrain"]
+mesh = ArrayMesh()
+material_override = SubResource("GrassMaterial")
+
+[node name="IslandCollision" type="StaticBody3D" parent="Terrain"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Terrain/IslandCollision"]
+shape = SubResource("IslandCollision")
+
+[node name="Water" type="Node3D" parent="."]
+
+[node name="RiverMesh" type="MeshInstance3D" parent="Water"]
+mesh = ArrayMesh()
+material_override = SubResource("WaterMaterial")
+
+[node name="SwampMesh" type="MeshInstance3D" parent="Water"]
+mesh = ArrayMesh()
+material_override = SubResource("SwampMaterial")
+
+[node name="WaterCollision" type="StaticBody3D" parent="Water"]
+collision_layer = 1
+collision_mask = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Water/WaterCollision"]
+shape = SubResource("WaterCollision")
+
+[node name="Trees" type="Node3D" parent="."]
+
+[node name="Animals" type="Node3D" parent="."]
+
+[node name="Plants" type="Node3D" parent="."]
+
+[node name="Fruits" type="Node3D" parent="."]
+
+[node name="Bushes" type="Node3D" parent="."]
+
+[node name="Rocks" type="Node3D" parent="."]
+
+[connection signal="tree_entered" from="." to="." method="_on_tree_entered"]
