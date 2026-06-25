@@ -7,8 +7,62 @@ var island_size = randf_range(island_size_min, island_size_max)
 var poly_count = 0
 var max_polys = 2500
 
+# Mobile camera controls
+var camera_distance = 120
+var camera_height = 60
+var camera_angle_h = 0
+var camera_angle_v = 0.5
+var touch_start_pos = Vector2.ZERO
+var touch_sensitivity = 0.01
+
 func _ready():
 	generate_island()
+	setup_mobile_controls()
+
+func setup_mobile_controls():
+	# Configurar entrada táctil
+	if not Input.is_action_registered("ui_touch_swipe_left"):
+		InputMap.add_action("ui_touch_swipe_left")
+	
+	# Ajustar calidad gráfica para móvil
+	get_window().size = DisplayServer.screen_get_usable_rect().size
+	Engine.max_fps = 60
+
+func _input(event: InputEvent):
+	# Controles táctiles
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			touch_start_pos = event.position
+		else:
+			var swipe = event.position - touch_start_pos
+			if swipe.length() > 50:
+				handle_swipe(swipe)
+	
+	elif event is InputEventScreenDrag:
+		var delta = event.relative
+		camera_angle_h += delta.x * touch_sensitivity
+		camera_angle_v -= delta.y * touch_sensitivity
+		camera_angle_v = clamp(camera_angle_v, 0.1, 1.5)
+		update_camera()
+	
+	# Zoom con dos dedos (pellizco)
+	if event is InputEventGesture:
+		if event.get_class() == "InputEventGestureMultitouch":
+			camera_distance -= event.relative.y * 2
+			camera_distance = clamp(camera_distance, 50, 250)
+			update_camera()
+
+func handle_swipe(swipe: Vector2):
+	pass  # Acciones adicionales para gestos
+
+func update_camera():
+	var camera = $Camera3D
+	var x = sin(camera_angle_h) * cos(camera_angle_v) * camera_distance
+	var y = sin(camera_angle_v) * camera_distance + camera_height
+	var z = cos(camera_angle_h) * cos(camera_angle_v) * camera_distance
+	
+	camera.position = Vector3(x, y, z)
+	camera.look_at(Vector3.ZERO + Vector3.UP * 10, Vector3.UP)
 
 func generate_island():
 	# Generate terrain
@@ -29,6 +83,7 @@ func generate_island():
 	generate_animals()
 	
 	print("Island generated with approximately %d polygons" % poly_count)
+	update_camera()
 
 func generate_terrain():
 	var mesh = ArrayMesh()
