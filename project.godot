@@ -1,0 +1,22 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that change here are too many and would make it hard to document via editing.
+; However, the file format is simple enough to understand (even if it contains several subsections with comments).
+; Format: https://docs.godotengine.org/projects/export/converting_project_to_gdscript.html
+
+config_version=5
+
+[application]
+
+config/name="Godot Island Farm"
+config/description="Low-poly 3D island farm with animals, plants, fruits, forest, river and swamp"
+config/version="1.0"
+run/main_scene="res://maps/island_farm.tscn"
+config/features=PackedStringArray("4.0", "3d")
+config/icon="res://icon.svg"
+
+[rendering]
+
+textures/vram_compression/import_etc2_astc=true
+lights_and_shadows/directional_shadow/size=4096
+global_illumination/voxel_gi/performance=1
